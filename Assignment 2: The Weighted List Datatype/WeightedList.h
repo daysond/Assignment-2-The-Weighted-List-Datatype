@@ -87,82 +87,60 @@ public:
     
 //    WeightedList(const WeightedList& rhs);. A copy constructor for the list. Copy node by node from rhs.
     WeightedList(const WeightedList& rhs){
+        front = nullptr;
         *this = rhs;
     }
     
 //    WeightedList& operator=(const WeightedList& rhs);. A copy assignment for the list. Delete the current list and copy node by node from rhs.
     WeightedList& operator=(const WeightedList& rhs){
+        
         num = rhs.num;
-        if(front) {
-//            Node* current = front;
-//            while (current) {
-//                Node* temp = front->next;
-//                delete front;
-//                front = nullptr;
-//                current = temp->next;
-//            }
-            front = nullptr;
-        }
         
-         copyNode(rhs.front, front);
+        deleteNodes();
         
-        for (auto e = begin(); e != end(); ++e) {
-            std::cout <<" element: " << *e << std::endl;
-        }
-        std::cout <<"******" << std::endl;
-        
+        copyNode(rhs.front, front);
         
         return *this;
     }
     
-//    WeightedList<T>::Node* copyNodeR(WeightedList<T>::Node* src, WeightedList<T>::Node* dest) {
-//
-//        //base
-//        if(src->next == nullptr) {
-//            dest = new Node(src->data);
-//            return dest;
-//        }
-//        else if(dest == nullptr) {
-//            dest = new Node(src->data);
-//            dest = dest->next;
-//            return copyNodeR(src->next, dest);
-//
-//        }
-//
-//        return nullptr;
-////        std::cout << "copying" << std::endl;
-//
-//    }
-    
-    void copyNode(WeightedList<T>::Node* src, WeightedList<T>::Node* dest) {
-        
+    void copyNode(WeightedList<T>::Node* src, WeightedList<T>::Node* &dest) {
         //base
-        if(src->next == nullptr) {
-            Node* temp = new Node(src->data);
-            dest = temp;
-        }
+        if(src->next == nullptr)
+            dest = new Node(src->data);
+             
         else if(dest == nullptr) {
-//            dest = new Node(src->data);
-            Node* temp = new Node(src->data);
-            dest = temp;
-//            dest = dest->next;
+            dest = new Node(src->data);
             copyNode(src->next, dest->next);
         }
+    }
+    
+    void deleteNodes() {
         
-//        std::cout << "copying" << std::endl;
+        while(front) {
+            Node* temp = front->next;
+            delete front;
+            front = temp;
+        }
         
     }
 //    WeightedList(WeightedList&& rhs);. A move constructor for the list. Set the front variable to the front variable of rhs. Then set the front variable of the rhs to nullptr. Copy the data element counter from the rhs then set the data element counter of the rhs to zero. The rhs is effectively an empty list.
     WeightedList(WeightedList&& rhs){
-        
-        
+        front = nullptr;
+        *this = std::move(rhs);
+
     }
     
     
 //    WeightedList& operator=(WeightedList&& rhs);. A move assignment for the list. Delete the current list then set the front variable to the front variable of rhs. Then set the front variable of the rhs to nullptr. Copy the data element counter from the rhs then set the data element counter of the rhs to zero. The rhs is effectively an empty list.
     WeightedList& operator=(WeightedList&& rhs){
         
-        return this;
+        deleteNodes();
+        
+        num = rhs.num;
+        front = rhs.front;
+        rhs.front = nullptr;
+        rhs.num = 0;
+        return *this;
     }
     
 //    iterator begin();. Return an iterator to the beginning of the list. Return the data element pointed to by the front pointer.
