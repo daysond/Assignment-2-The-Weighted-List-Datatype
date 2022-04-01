@@ -13,8 +13,6 @@ int main() {
 	wList.push_back(3);
 	wList.push_back(2);
 	wList.push_back(1);
-
-	cout << "Original list:" << endl;
 	for (auto e = wList.begin(); e != wList.end(); ++e) {
 		cout << *e << endl;
 	}
