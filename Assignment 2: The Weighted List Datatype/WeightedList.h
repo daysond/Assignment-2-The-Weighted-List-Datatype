@@ -30,19 +30,14 @@ public:
     class iterator {
         
     protected:
-        
         friend class WeightedList;
         Node *current;
         
     public:
         
-        iterator(){
-            current = nullptr;
-        }
+        iterator(){ current = nullptr;  }
         
-        iterator(Node* node){
-            current = node;
-        }
+        iterator(Node* node){ current = node; }
         
 //      iterator operator++();. Advance the current element pointer. Return the current element.
         iterator& operator++(){  // prefix
@@ -60,18 +55,12 @@ public:
         }
         
 //        bool operator==(iterator rhs);. Perform a logical comparison between the current element and the rhs element. Return true if they are the same.
-        bool operator==(const iterator& rhs){
-            return current == rhs.current;
-        }
+        bool operator==(const iterator& rhs){ return current == rhs.current; }
         
 //        bool operator!=(iterator rhs);. Perform a logical comparison between the current element and the rhs element. Return true if they are different.
-        bool operator!=(const iterator& rhs){
-            return current != rhs.current;
-        }
+        bool operator!=(const iterator& rhs){ return current != rhs.current; }
 //        T& operator*();. Returns a reference to the current element.
-        T& operator*() {
-            return current->data;
-        }
+        T& operator*() { return current->data; }
         
     };
 
@@ -80,10 +69,7 @@ public:
 	//      and function definitions or implementations below
 //
 //    WeightedList();. A default constructor for the list. Need to initialize the front and counter variables.
-    WeightedList(){
-        front = nullptr;
-        num = 0;
-    }
+    WeightedList(): front(nullptr), num(0){}
     
 //    WeightedList(const WeightedList& rhs);. A copy constructor for the list. Copy node by node from rhs.
     WeightedList(const WeightedList& rhs){
@@ -103,31 +89,11 @@ public:
         return *this;
     }
     
-    void copyNode(WeightedList<T>::Node* src, WeightedList<T>::Node* &dest) {
-        //base
-        if(src->next == nullptr)
-            dest = new Node(src->data);
-             
-        else if(dest == nullptr) {
-            dest = new Node(src->data);
-            copyNode(src->next, dest->next);
-        }
-    }
-    
-    void deleteNodes() {
-        
-        while(front) {
-            Node* temp = front->next;
-            delete front;
-            front = temp;
-        }
-        
-    }
+
 //    WeightedList(WeightedList&& rhs);. A move constructor for the list. Set the front variable to the front variable of rhs. Then set the front variable of the rhs to nullptr. Copy the data element counter from the rhs then set the data element counter of the rhs to zero. The rhs is effectively an empty list.
     WeightedList(WeightedList&& rhs){
         front = nullptr;
         *this = std::move(rhs);
-
     }
     
     
@@ -144,15 +110,11 @@ public:
     }
     
 //    iterator begin();. Return an iterator to the beginning of the list. Return the data element pointed to by the front pointer.
-    iterator begin(){
-        
-        return iterator(front);
-    }
+    iterator begin(){ return iterator(front); }
+    
 //    iterator end();. Return an iterator to the end of the list. The last element of the list is actually nullptr by convention.
-    iterator end(){
-        
-        return iterator();
-    }
+    iterator end(){ return iterator(); }
+    
 //    void push_back(const T& data);. Push data of type T to the end of the list. This means starting from the front of the list, traversing all the way through to the end, then inserting your data element there.
     void push_back(const T& data) {
         
@@ -211,7 +173,6 @@ public:
                     
                 }
             }
-            
             //If found, advance node
             if(found) {
                 secondPre->next = current; //debug
@@ -233,37 +194,58 @@ public:
         if(!front)
             throw std::out_of_range("Empty list");
         
-        Node* current = front;
-        
-        if(current->data == *it){
-            Node* temp = front;
-            front = front->next;
-            delete temp;
-            temp = nullptr;
+        if(front->data == *it) {
+            
+            Node* temp = front->next;
+            delete front;
+            front = temp;
+            
         } else {
-            bool found = false;
-            while (current && !found) {
-                
-                Node* next = current->next;
-                
-                if(next->data == *it) {
-                    current->next = next->next;
-                    delete next;
-                    next = nullptr;
-                    found = true;
-                } else {
-                    current = next;
-                }
+            
+            Node* current = front;
+            Node* previous = nullptr;
+            while (current->data != *it) {
+                previous = current;
+                current = current->next;
             }
+            
+            previous->next = current->next;
+            delete current;
+            current =  nullptr;
         }
+        
+        --num;
+
+//        if(current->data == *it){
+//            Node* temp = front;
+//            front = front->next;
+//            delete temp;
+//            temp = nullptr;
+//        } else {
+//            bool found = false;
+//            //TODO: terminated by signal SIGSEGV (Address boundary error)
+//            while (current && !found) {
+//
+//                Node* next = current->next;
+//
+//                if(next->data == *it) {
+//                    current->next = next->next;
+//                    delete next;
+//                    next = nullptr;
+//                    found = true;
+//                } else {
+//                    current = next;
+//                }
+//            }
+//        }
         
         return ++it;
     }
 //    iterator erase(iterator begin, iterator end);. Erase a range of data items from begin to end excluding end. Return an iterator to end. To do this you might have to have a pointer to the first element, a pointer to the element before it, and a pointer to the last element.
     iterator erase(iterator begin, iterator end){
         
-        for(begin; begin != end; ++begin) {
-            erase(begin);
+        for(auto start = begin; start != end; ++start) {
+            erase(start);
         }
         
         return end;
@@ -275,8 +257,29 @@ public:
     int size() const{ return num; }
 //    ~WeightedList();. A destructor for the weighted list. Be sure to delete all the data elements in the list.
     ~WeightedList() {
-        
-        
+        deleteNodes();
+    }
+    
+private:
+    //Helper functions
+    void copyNode(WeightedList<T>::Node* src, WeightedList<T>::Node* &dest) {
+        //base
+        if(src->next == nullptr)
+            dest = new Node(src->data);
+             
+        else if(dest == nullptr) {
+            dest = new Node(src->data);
+            copyNode(src->next, dest->next);
+        }
+    }
+    
+    void deleteNodes() {
+
+        while(front) {
+            Node* temp = front->next;
+            delete front;
+            front = temp;
+        }
     }
     
 };
