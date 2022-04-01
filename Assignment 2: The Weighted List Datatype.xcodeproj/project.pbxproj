@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		ED07467E27F0FE5A005D4448 /* WeightedListMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED07467D27F0FE5A005D4448 /* WeightedListMain.cpp */; };
+		ED433A7B27F7690A006BB06B /* WeightedListMainTimer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED433A7A27F7690A006BB06B /* WeightedListMainTimer.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +27,7 @@
 		ED07467227F0FE1F005D4448 /* Assignment 2: The Weighted List Datatype */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Assignment 2: The Weighted List Datatype"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED07467C27F0FE5A005D4448 /* WeightedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeightedList.h; sourceTree = "<group>"; };
 		ED07467D27F0FE5A005D4448 /* WeightedListMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WeightedListMain.cpp; sourceTree = "<group>"; };
+		ED433A7A27F7690A006BB06B /* WeightedListMainTimer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WeightedListMainTimer.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 			children = (
 				ED07467C27F0FE5A005D4448 /* WeightedList.h */,
 				ED07467D27F0FE5A005D4448 /* WeightedListMain.cpp */,
+				ED433A7A27F7690A006BB06B /* WeightedListMainTimer.cpp */,
 			);
 			path = "Assignment 2: The Weighted List Datatype";
 			sourceTree = "<group>";
@@ -122,6 +125,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED07467E27F0FE5A005D4448 /* WeightedListMain.cpp in Sources */,
+				ED433A7B27F7690A006BB06B /* WeightedListMainTimer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
