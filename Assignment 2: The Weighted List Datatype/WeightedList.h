@@ -191,14 +191,17 @@ public:
 //    iterator erase(iterator it);. Erase a data item. Return the iterator to the next item. To do this you might have to have a pointer to the current element and the one before it.
     iterator erase(iterator it){
         
+        Node* retNode = nullptr;
+        
         if(!front)
             throw std::out_of_range("Empty list");
         
         if(front->data == *it) {
-            
-            Node* temp = front->next;
+            retNode = front->next;
+//            Node* temp = front->next;
             delete front;
-            front = temp;
+//            front = temp;
+            front = retNode;
             
         } else {
             
@@ -210,52 +213,75 @@ public:
             }
             
             previous->next = current->next;
+            retNode = current->next;
             delete current;
             current =  nullptr;
         }
         
         --num;
 
-//        if(current->data == *it){
-//            Node* temp = front;
-//            front = front->next;
-//            delete temp;
-//            temp = nullptr;
-//        } else {
-//            bool found = false;
-//            //TODO: terminated by signal SIGSEGV (Address boundary error)
-//            while (current && !found) {
-//
-//                Node* next = current->next;
-//
-//                if(next->data == *it) {
-//                    current->next = next->next;
-//                    delete next;
-//                    next = nullptr;
-//                    found = true;
-//                } else {
-//                    current = next;
-//                }
-//            }
-//        }
-        
-        return ++it;
+
+        return iterator(retNode);
+
     }
-//    iterator erase(iterator begin, iterator end);. Erase a range of data items from begin to end excluding end. Return an iterator to end. To do this you might have to have a pointer to the first element, a pointer to the element before it, and a pointer to the last element.
+
     iterator erase(iterator begin, iterator end){
         
-        for(auto start = begin; start != end; ++start) {
-            erase(start);
+        if(!front)
+            throw std::out_of_range("Empty list");
+        
+        Node* retNode = nullptr;
+        Node* current = front;
+
+        //find the begin node
+        while(current->data != *begin) {
+            current = current->next;
         }
         
-        return end;
+        //Deleting elements
+        //while condition: if the last element needs to be erased, end condition: current is nullptr,
+        //                 if the ending element is within range, check if the current pointer element is same as the end element
+        while ((end == iterator()) ? current != nullptr
+               : current && current->data != *end) {
+            
+            retNode = current->next;
+            delete current;
+            current = retNode;
+        
+        }
+        
+        front = retNode;
+
+        
+//        if(end == iterator()) {
+//            while (current != nullptr) {
+//                retNode = current->next;
+//                delete current;
+//                current = retNode;
+//            }
+//            front = nullptr;
+//
+//
+//        } else {
+//            while (current && current->data != *end) {
+//                retNode = current->next;
+//                delete current;
+//                current = retNode;
+//            }
+//            front->next = current;
+//
+//        }
+        
+        return iterator(retNode);
+        
+
     }
     
-//    bool empty() const;. Return true if the list is empty, false otherwise. If you have a variable that keeps track of the number of data elements, you can simply return true if this counter is zero, false otherwise.
+
     bool empty() const{ return num == 0;}
-//    int size() const;. Return the number of data items in the list. If you have a counter that keeps track of the number of data elements, you can simply return the value of this number.
+
     int size() const{ return num; }
-//    ~WeightedList();. A destructor for the weighted list. Be sure to delete all the data elements in the list.
+
     ~WeightedList() {
         deleteNodes();
     }
@@ -273,9 +299,9 @@ private:
         }
     }
     
-    void deleteNodes() {
+    void deleteNodes(Node* terminatingNode = nullptr) {
 
-        while(front) {
+        while(front != terminatingNode) {
             Node* temp = front->next;
             delete front;
             front = temp;
@@ -287,3 +313,26 @@ private:
 }
 
 #endif// _WEIGHTEDLIST_H_
+
+/*
+ Would the following work? Why or why not? (0.5 mark)
+ for (auto e = wList.begin(); e != wList.end(); ++e) {
+     wList.erase(e);
+ }
+ 
+ 
+ 
+ Would the following work? Why or why not? (0.5 mark)
+ for (auto e = wList.begin(); e != wList.end(); ) {
+     e = wList.erase(e);
+ }
+ 
+ 
+ Compare the weighted list with STL's list. What pointers and functionality appear in STL's list that are missing in our weighted list? (0.5 mark)
+ 
+ 
+ 
+ The program WeightedListMainTimer.cpp was created to run in Linux (where there are higher resolution timers) to see if the search algorithm actually improves itself over time. See the bottom 1/4 of the file for the test code. A weighted list was created with 10,000 elements and an element with data=6 was inserted at the end. The program performed a number of searches, with a search for data=6 every third search, to simulate a situation where data=6 starts in the worst case (at the back) but is searched for frequently. The time elapsed for each search for data=6 is recorded. Take a look at the data in the file searchTime.dat. On the left is the number of the search attempt and on the right is the time elapsed in nanoseconds. You can see a graph of search time vs number of searches below. What will you report to the company executives - did this search algorithm "learn"? Did it learn well enough to pursue applying this algorithm to other data types? If not, how would you improve this algorithm? (0.5 mark)
+ 
+ 
+ */
