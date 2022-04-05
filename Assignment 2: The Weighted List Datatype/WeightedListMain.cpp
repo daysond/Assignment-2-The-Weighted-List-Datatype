@@ -41,7 +41,6 @@ int main() {
 	//search for 4 three times
 	wList.search(4);
 	wList.search(4);
-	wList.search(4);
 	cout << "search 4, 4, 4:" << endl;
 	for (auto e = wList.begin(); e != wList.end(); ++e) {
 		cout << *e << endl;
@@ -183,3 +182,105 @@ int main() {
 
 	return 0;
 }
+
+/*
+ Original list:
+ 5
+ 4
+ 3
+ 2
+ 1
+ 
+ search 3, 2, 1:
+ 5
+ 3
+ 2
+ 1
+ 4
+ 
+ erase first two:
+ 2
+ 1
+ 4
+ 
+ search 4, 4, 4:
+ 4
+ 2
+ 1
+ 
+ erase the second one:
+ 4
+ 1
+ 
+ erase the second one again (should have advanced to the last):
+ 4
+ 
+ added 10, 20, 30, 40:
+ 4
+ 10
+ 20
+ 30
+ 40
+ 
+ search for 10:
+ 10
+ 4
+ 20
+ 30
+ 40
+ 
+ erase the entire list:
+ 
+ added 15, 16, 17, 18. 19, 20:
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 
+ seached 20 four times and 18 once:
+ 15
+ 20
+ 16
+ 18
+ 17
+ 19
+ 
+ erased a range (1,3) excluding 3:
+ 15
+ 18
+ 17
+ 19
+ 
+ create wList2 from wList by copy constructor with search 19:
+ 15
+ 18
+ 19
+ 17
+ 
+ wList2 empty:0 wList2 size:4
+ 
+ create wList3 from wList by copy assignment with search 18:
+ 18
+ 15
+ 17
+ 19
+ 
+ create wList4 from wList3 by move constructor:
+ 18
+ 15
+ 17
+ 19
+ 
+ create wList5 from wList2 by move assignment:
+ 15
+ 18
+ 19
+ 17
+ 
+ wList2 now became:
+ 
+ wList3 now became:
+ 
+ */

@@ -12,19 +12,19 @@ template <typename T>
 class WeightedList {
     
     // MARK: - Node struct
-	struct Node {
-		T data;
-		Node* next;
-
-		Node(const T& _data) {
-			data = _data;
-			next = nullptr;
-		}
-	};
+    struct Node {
+        T data;
+        Node* next;
+        
+        Node(const T& _data) {
+            data = _data;
+            next = nullptr;
+        }
+    };
     
     // MARK: - Member variables
-	Node* front;
-	int num;
+    Node* front;
+    int num;
     
 public:
     
@@ -45,33 +45,33 @@ public:
             if(current) current = current->next;
             return *this;
         }
-
+        
         iterator operator++(int value){ //postfix
             iterator copy = *this;
             if(current) current = current->next;
             return copy;
         }
         
-//        bool operator==(iterator rhs);. Perform a logical comparison between the current element and the rhs element. Return true if they are the same.
+        //        bool operator==(iterator rhs);. Perform a logical comparison between the current element and the rhs element. Return true if they are the same.
         bool operator==(const iterator& rhs){ return current == rhs.current; }
         
-//        bool operator!=(iterator rhs);. Perform a logical comparison between the current element and the rhs element. Return true if they are different.
+        //        bool operator!=(iterator rhs);. Perform a logical comparison between the current element and the rhs element. Return true if they are different.
         bool operator!=(const iterator& rhs){ return current != rhs.current; }
-//        T& operator*();. Returns a reference to the current element.
+        //        T& operator*();. Returns a reference to the current element.
         T& operator*() { return current->data; }
         
     };
-
+    
     
     // MARK: - WeightedList methods
-
+    
     WeightedList(): front(nullptr), num(0){}
     
     WeightedList(const WeightedList& rhs){
         front = nullptr;
         *this = rhs;
     }
-
+    
     WeightedList& operator=(const WeightedList& rhs){
         
         num = rhs.num;
@@ -87,7 +87,7 @@ public:
     }
     
     
-//    WeightedList& operator=(WeightedList&& rhs);. A move assignment for the list. Delete the current list then set the front variable to the front variable of rhs. Then set the front variable of the rhs to nullptr. Copy the data element counter from the rhs then set the data element counter of the rhs to zero. The rhs is effectively an empty list.
+    //    WeightedList& operator=(WeightedList&& rhs);. A move assignment for the list. Delete the current list then set the front variable to the front variable of rhs. Then set the front variable of the rhs to nullptr. Copy the data element counter from the rhs then set the data element counter of the rhs to zero. The rhs is effectively an empty list.
     WeightedList& operator=(WeightedList&& rhs){
         
         deleteNodes();
@@ -107,70 +107,61 @@ public:
     void push_back(const T& data) {
         
         if(!front)  front = new Node(data);
-            
+        
         else {
             
             Node* current = front;
             
             while (current->next)
                 current = current->next;
- 
+            
             Node* temp = new Node(data);
             current->next = temp;
-        
+            
         }
         
         ++num;
     }
-
+    
     iterator search(const T& data){
         
-        iterator it;
+        Node *retNode = nullptr;
+        Node* current = front;
+        Node* previous = nullptr;
+        Node* secondPre = nullptr;
         
-        if(!front)
-            it = iterator();
-        else if ( front->data == data )
-            it = iterator(front);
-        else if (front->next->data == data) {
-            Node *temp = front->next;
-            front->next = temp->next;
-            temp->next = front;
-            front = temp;
+        
+        while (current && current->data != data) {
+            //next node
+            secondPre = previous;
+            previous = current;
+            current = current->next;
         }
-        else {
-            Node* current = front->next;
-            Node* previous = front;
-            Node* secondPre = nullptr;
-            bool found = false;
-            
-            while (current && !found) {
+        
+        if(current) {
+            //advance node
+            if (previous == nullptr) { //target is front
+                retNode = front;
                 
-                if (current->data == data) {
-                    found = true;
-                } else {
-                    //next node
-                    secondPre = previous;
-                    previous = current;
-                    current = current->next;
-                    
-                }
-            }
-            //If found, advance node
-            if(found) {
+            } else if(secondPre == nullptr) { //target is front->next
+                secondPre = front->next;
+                front->next = secondPre->next;
+                secondPre->next = front;
+                front = secondPre;
+                retNode = front->next;
+                
+            } else {
                 secondPre->next = current; //debug
                 previous->next = current->next;
                 current->next = previous;
-                
-                it = iterator(current);
-                
-            } else {
-                it = iterator();
+                retNode = current;
+     
             }
         }
-        
-        return iterator();
-    }
 
+        return iterator(retNode);
+    }
+    
     iterator erase(iterator it){
         
         Node* retNode = nullptr;
@@ -197,7 +188,7 @@ public:
         return iterator(retNode);
         
     }
-
+    
     iterator erase(iterator begin, iterator end){
         
         if(!front)  throw std::out_of_range("Empty list");
@@ -210,7 +201,7 @@ public:
             previous = current;
             current = current->next;
         }
-
+        
         //Deleting elements
         //while condition: if the last element needs to be erased, end condition: current is nullptr,
         //                 if the ending element is within range, check if the current pointer element is same as the end element
@@ -224,16 +215,16 @@ public:
         }
         
         previous ? previous->next = retNode : front = retNode;
-
+        
         return iterator(retNode);
         
     }
     
-
+    
     bool empty() const{ return num == 0;}
-
+    
     int size() const{ return num; }
-
+    
     ~WeightedList() { deleteNodes();  }
     
 private:
@@ -242,7 +233,7 @@ private:
         //base
         if(src->next == nullptr)
             dest = new Node(src->data);
-             
+        
         else if(dest == nullptr) {
             dest = new Node(src->data);
             copyNode(src->next, dest->next);
@@ -250,7 +241,7 @@ private:
     }
     
     void deleteNodes(Node* terminatingNode = nullptr) {
-
+        
         while(front != terminatingNode) {
             Node* temp = front->next;
             delete front;
@@ -267,14 +258,14 @@ private:
 /*
  Would the following work? Why or why not? (0.5 mark)
  for (auto e = wList.begin(); e != wList.end(); ++e) {
-     wList.erase(e);
+ wList.erase(e);
  }
  
  
  
  Would the following work? Why or why not? (0.5 mark)
  for (auto e = wList.begin(); e != wList.end(); ) {
-     e = wList.erase(e);
+ e = wList.erase(e);
  }
  
  
