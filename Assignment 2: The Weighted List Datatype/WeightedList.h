@@ -42,15 +42,13 @@ public:
         iterator(Node* node){ current = node; }
         
         iterator& operator++(){  // prefix
-            if(current)
-                current = current->next;
+            if(current) current = current->next;
             return *this;
         }
 
         iterator operator++(int value){ //postfix
             iterator copy = *this;
-            if(current)
-                current = current->next;
+            if(current) current = current->next;
             return copy;
         }
         
@@ -119,11 +117,10 @@ public:
  
             Node* temp = new Node(data);
             current->next = temp;
-            
+        
         }
         
         ++num;
-        
     }
 
     iterator search(const T& data){
@@ -190,15 +187,12 @@ public:
         
         retNode = current->next;
         
-        
-        if(previous)    previous->next = current->next; // connect the linked list back together
-        else    front = retNode; // if the first node is going to be erase, previous is null, front will be front->next,
+        previous ? previous->next = current->next : front = retNode;
         
         delete current;
         current =  nullptr;
         
         --num;
-        
         
         return iterator(retNode);
         
@@ -210,12 +204,13 @@ public:
         
         Node* retNode = nullptr;
         Node* current = front;
-
+        Node* previous = nullptr;
         //find the begin node
         while(current->data != *begin) {
+            previous = current;
             current = current->next;
         }
-        
+
         //Deleting elements
         //while condition: if the last element needs to be erased, end condition: current is nullptr,
         //                 if the ending element is within range, check if the current pointer element is same as the end element
@@ -228,7 +223,7 @@ public:
             --num;
         }
         
-        front = retNode;
+        previous ? previous->next = retNode : front = retNode;
 
         return iterator(retNode);
         
@@ -239,9 +234,7 @@ public:
 
     int size() const{ return num; }
 
-    ~WeightedList() {
-        deleteNodes();
-    }
+    ~WeightedList() { deleteNodes();  }
     
 private:
     //Helper functions
