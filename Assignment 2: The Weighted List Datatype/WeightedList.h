@@ -151,7 +151,7 @@ public:
                 retNode = front->next;
                 
             } else {
-                secondPre->next = current; //debug
+                secondPre->next = current;
                 previous->next = current->next;
                 current->next = previous;
                 retNode = current;
@@ -164,25 +164,31 @@ public:
     
     iterator erase(iterator it){
         
-        Node* retNode = nullptr;
-        
         if(!front)  throw std::out_of_range("Empty list");
         
+        Node* retNode = nullptr;
         Node* current = front;
         Node* previous = nullptr;
         
-        while (current->data != *it) {
-            previous = current;
-            current = current->next;
+        if (front->data == *it) {
+            //first node is the one to be erased
+            retNode = front->next;
+            front = front->next;
+            
+        } else {
+    
+             do {
+                previous = current;
+                current = current->next;
+             } while (current->data != *it);
+            
+            retNode = current->next;
+            previous->next = retNode;
+            
         }
-        
-        retNode = current->next;
-        
-        previous ? previous->next = current->next : front = retNode;
         
         delete current;
         current =  nullptr;
-        
         --num;
         
         return iterator(retNode);
@@ -196,25 +202,35 @@ public:
         Node* retNode = nullptr;
         Node* current = front;
         Node* previous = nullptr;
+        
+        auto deleteNode = [&](Node* &node){
+            retNode = node->next;
+            delete current;
+            node = retNode;
+            --num;
+        };
+        
         //find the begin node
         while(current->data != *begin) {
             previous = current;
             current = current->next;
         }
         
-        //Deleting elements
-        //while condition: if the last element needs to be erased, end condition: current is nullptr,
-        //                 if the ending element is within range, check if the current pointer element is same as the end element
-        while ((end == iterator()) ? current != nullptr
-               : current && current->data != *end) {
-            
-            retNode = current->next;
-            delete current;
-            current = retNode;
-            --num;
-        }
-        
-        previous ? previous->next = retNode : front = retNode;
+//
+//        while (iterator(current) != end)
+//            deleteNode(current);
+//
+        if(end == iterator())
+            while (current != nullptr)
+                deleteNode(current);
+
+        else
+            while (current->data != *end)
+                deleteNode(current);
+              
+        previous ? //previous is null if deleting from the beginning
+        previous->next = retNode
+        : front = retNode; //set front to retNode if deleting from the beginning
         
         return iterator(retNode);
         
