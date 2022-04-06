@@ -89,13 +89,19 @@ int main() {
 	cout << endl;
 
 	//erase the entire list
-//	for (auto e = wList.begin(); e != wList.end(); ++e) {//MW: why does this not work?
-//		wList.erase(e);
-//	}
+	for (auto e = wList.begin(); e != wList.end(); ++e) {//MW: why does this not work?
+//        cout << " " << *e << " ";
+        e.mem(); // prints memory address
+		wList.erase(e);
+//        cout << " " << *e << " ";
+        e.mem();
+        cout<<endl;
+	}
+    cout<<endl;
 //	for (auto e = wList.begin(); e != wList.end(); ) {//MW: why does this work?
 //		e = wList.erase(e);
 //	}
-	wList.erase(wList.begin(), wList.end());
+//	wList.erase(wList.begin(), wList.end());
 	cout << "erase the entire list:" << endl;
 	for (auto e = wList.begin(); e != wList.end(); ++e) {
 		cout << *e << endl;

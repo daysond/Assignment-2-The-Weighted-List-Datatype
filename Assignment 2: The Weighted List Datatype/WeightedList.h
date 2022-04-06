@@ -41,6 +41,14 @@ public:
         
         iterator(Node* node){ current = node; }
         
+        void mem() {
+            std::cout << "Address " << current << " " << std::endl;
+        }
+        
+        void nd() {
+            std::cout << "Node: " << current->data << " Next: "<< (current->next ? current->next->data : 0) << std::endl;
+        }
+        
         iterator& operator++(){  // prefix
             if(current) current = current->next;
             return *this;
@@ -148,6 +156,7 @@ public:
                 front->next = secondPre->next;
                 secondPre->next = front;
                 front = secondPre;
+                
                 retNode = front->next;
                 
             } else {
@@ -163,6 +172,9 @@ public:
     }
     
     iterator erase(iterator it){
+        
+        std::cout << "before: " ;
+        it.mem(); // prints memory address
         
         Node* retNode = nullptr;
         
@@ -180,11 +192,18 @@ public:
         
         previous ? previous->next = current->next : front = retNode;
         
+        std::cout << "current Node: " << current << std::endl;
+        
+        
         delete current;
+        std::cout << "current content: " << current->data << std::endl;
         current =  nullptr;
+        std::cout << "current deleted: " << current << std::endl;
         
         --num;
-        
+        std::cout << "*it after : " ;
+        it.mem();
+        it.nd(); // prints node data, 0 means no data
         return iterator(retNode);
         
     }
