@@ -23,8 +23,8 @@ class WeightedList {
     };
     
     // MARK: - Member variables
-    Node* front;
-    int num;
+    Node* front = nullptr;
+    int num = 0;
     
 public:
     
@@ -52,12 +52,10 @@ public:
             return copy;
         }
         
-        //        bool operator==(iterator rhs);. Perform a logical comparison between the current element and the rhs element. Return true if they are the same.
         bool operator==(const iterator& rhs){ return current == rhs.current; }
         
-        //        bool operator!=(iterator rhs);. Perform a logical comparison between the current element and the rhs element. Return true if they are different.
         bool operator!=(const iterator& rhs){ return current != rhs.current; }
-        //        T& operator*();. Returns a reference to the current element.
+      
         T& operator*() { return current->data; }
         
     };
@@ -65,37 +63,38 @@ public:
     
     // MARK: - WeightedList methods
     
-    WeightedList(): front(nullptr), num(0){}
+    WeightedList() {}
     
     WeightedList(const WeightedList& rhs){
-        front = nullptr;
         *this = rhs;
     }
     
     WeightedList& operator=(const WeightedList& rhs){
-        
-        num = rhs.num;
-        deleteNodes();
-        copyNode(rhs.front, front);
-        
+        if(this != &rhs && rhs.front) {
+            num = rhs.num;
+            deleteNodes();
+            copyNode(rhs.front, front);
+        }
         return *this;
     }
     
     WeightedList(WeightedList&& rhs){
-        front = nullptr;
         *this = std::move(rhs);
     }
     
     
-    //    WeightedList& operator=(WeightedList&& rhs);. A move assignment for the list. Delete the current list then set the front variable to the front variable of rhs. Then set the front variable of the rhs to nullptr. Copy the data element counter from the rhs then set the data element counter of the rhs to zero. The rhs is effectively an empty list.
     WeightedList& operator=(WeightedList&& rhs){
         
-        deleteNodes();
-        
-        num = rhs.num;
-        front = rhs.front;
-        rhs.front = nullptr;
-        rhs.num = 0;
+        if(this != &rhs) {
+            
+            deleteNodes();
+            
+            num = rhs.num;
+            front = rhs.front;
+            rhs.front = nullptr;
+            rhs.num = 0;
+        }
+
         return *this;
     }
     
@@ -115,9 +114,7 @@ public:
             while (current->next)
                 current = current->next;
             
-            Node* temp = new Node(data);
-            current->next = temp;
-            
+            current->next = new Node(data);
         }
         
         ++num;
@@ -128,43 +125,24 @@ public:
         Node *retNode = nullptr;
         Node* current = front;
         Node* previous = nullptr;
-        Node* secondPre = nullptr;
+        Node* secondPrevious = nullptr;
         
-        
+        //advance node, until target node is found
         while (current && current->data != data) {
-            //next node
-            secondPre = previous;
+            secondPrevious = previous;
             previous = current;
             current = current->next;
         }
         
-        if(current) {
-            //advance node
-            if (previous == nullptr) { //target is front
-                retNode = front;
-                
-            } else if(secondPre == nullptr) { //target is front->next
-                secondPre = front->next;
-                front->next = secondPre->next;
-                secondPre->next = front;
-                front = secondPre;
-                retNode = front->next;
-                
-            } else {
-                secondPre->next = current;
-                previous->next = current->next;
-                current->next = previous;
-                retNode = current;
-     
-            }
-        }
-
+        //Swap nodes
+        if(current)
+            retNode = advanceTargetNode(secondPrevious, previous, current);
+        
         return iterator(retNode);
     }
     
+
     iterator erase(iterator it){
-        
-        if(!front)  throw std::out_of_range("Empty list");
         
         Node* retNode = nullptr;
         Node* current = front;
@@ -195,9 +173,8 @@ public:
         
     }
     
+    
     iterator erase(iterator begin, iterator end){
-        
-        if(!front)  throw std::out_of_range("Empty list");
         
         Node* retNode = nullptr;
         Node* current = front;
@@ -216,17 +193,16 @@ public:
             current = current->next;
         }
         
+        while (iterator(current) != end)
+            deleteNode(current);
+        
+//        if(end == iterator())
+//            while (current != nullptr)
+//                deleteNode(current);
 //
-//        while (iterator(current) != end)
-//            deleteNode(current);
-//
-        if(end == iterator())
-            while (current != nullptr)
-                deleteNode(current);
-
-        else
-            while (current->data != *end)
-                deleteNode(current);
+//        else
+//            while (current->data != *end)
+//                deleteNode(current);
               
         previous ? //previous is null if deleting from the beginning
         previous->next = retNode
@@ -244,8 +220,36 @@ public:
     ~WeightedList() { deleteNodes();  }
     
 private:
+    
     //Helper functions
+    
+    Node* advanceTargetNode(Node* &sp, Node* &p, Node* &c) {
+        //sp: second previous, p: previous, c: current
+        Node *retNode = nullptr;
+        
+        if (p == nullptr) { //target is front
+            retNode = front;
+            
+        } else if(sp == nullptr) { //target is front->next
+            sp = front->next; //secondPre acting as a temp node
+            front->next = sp->next;
+            sp->next = front;
+            front = sp;
+            retNode = front->next;
+            
+        } else {
+            sp->next = c;
+            p->next = c->next;
+            c->next = p;
+            retNode = c;
+ 
+        }
+        
+        return  retNode;
+    }
+    
     void copyNode(WeightedList<T>::Node* src, WeightedList<T>::Node* &dest) {
+        
         //base
         if(src->next == nullptr)
             dest = new Node(src->data);
@@ -256,10 +260,12 @@ private:
         }
     }
     
-    void deleteNodes(Node* terminatingNode = nullptr) {
+    void deleteNodes() {
         
-        while(front != terminatingNode) {
-            Node* temp = front->next;
+        Node* temp;
+        
+        while(front) {
+            temp = front->next;
             delete front;
             front = temp;
         }
