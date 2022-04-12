@@ -127,7 +127,7 @@ public:
         Node* previous = nullptr;
         Node* secondPrevious = nullptr;
         
-        //advance node, until target node is found
+        //Find target node
         while (current && current->data != data) {
             secondPrevious = previous;
             previous = current;
@@ -193,8 +193,12 @@ public:
             current = current->next;
         }
         
+        //Mark: - Approach One: use iterator
+        
         while (iterator(current) != end)
             deleteNode(current);
+        
+        //Mark: - Approach Two: use if-else
         
 //        if(end == iterator())
 //            while (current != nullptr)
@@ -203,9 +207,11 @@ public:
 //        else
 //            while (current->data != *end)
 //                deleteNode(current);
-              
-        previous ? //previous is null if deleting from the beginning
-        previous->next = retNode
+        
+        // - End
+        
+        //previous will be null if deleting from the beginning
+        previous ?  previous->next = retNode
         : front = retNode; //set front to retNode if deleting from the beginning
         
         return iterator(retNode);
@@ -283,6 +289,7 @@ private:
  wList.erase(e);
  }
  
+ this would not work. When the iterator is passed into the erase method, say, the iterator pointing to the front node, after erase is implemented, the current pointer is deleted and set to null. Internally, calling ++e advances the pointer by assigning the next node of current to current, yet current has been set to nullptr and current->next will not be accessbile. Thus this would not work.
  
  
  Would the following work? Why or why not? (0.5 mark)
@@ -290,9 +297,15 @@ private:
  e = wList.erase(e);
  }
  
+ erase returns the next node, which advances the iterator.
+ 
+ 
  
  Compare the weighted list with STL's list. What pointers and functionality appear in STL's list that are missing in our weighted list? (0.5 mark)
  
+ Pointer: pointer to the back
+ 
+ Funtionality: push_front, pop_front, pop (front or back), insert, swap, splice, remove_if etc
  
  
  The program WeightedListMainTimer.cpp was created to run in Linux (where there are higher resolution timers) to see if the search algorithm actually improves itself over time. See the bottom 1/4 of the file for the test code. A weighted list was created with 10,000 elements and an element with data=6 was inserted at the end. The program performed a number of searches, with a search for data=6 every third search, to simulate a situation where data=6 starts in the worst case (at the back) but is searched for frequently. The time elapsed for each search for data=6 is recorded. Take a look at the data in the file searchTime.dat. On the left is the number of the search attempt and on the right is the time elapsed in nanoseconds. You can see a graph of search time vs number of searches below. What will you report to the company executives - did this search algorithm "learn"? Did it learn well enough to pursue applying this algorithm to other data types? If not, how would you improve this algorithm? (0.5 mark)
